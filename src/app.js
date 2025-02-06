@@ -6,19 +6,29 @@ const app = express();
 
 // handling request
 
-app.use("/",(req, res) => {
-    res.send("Namaste from Dashboard");
+// this will match all the HTTP method API calls to test
+app.use("/user",(req, res) => {
+    res.send("HAHAHAHHHAA...")
 })
 
-app.use("/test",(req, res) => {
-    res.send("Hello from Naveen")
+// this will only handle the GET call to the user
+app.get("/user", (req, res) => {
+    res.send({ firstName: "Naveen", lastName: "Singh" });
 })
+app
 
-app.use("/hello",(req, res) => {
-    res.send("Hello hello hello")
-})
+app.post("/user", (req, res) => {
+    // sving data to DB
+    res.send("Data Successfully saved to databse");
+    
+});
 
-app.listen(7777, () => {
-    console.log("Server is running on the port 7777..");
+app.delete("/user", (req, res) => {
+    res.send("Data Successfully deleted from databse");
+});
+    
+
+app.listen(3000, () => {
+    console.log("Server is running on the port 3000..");
     
 });

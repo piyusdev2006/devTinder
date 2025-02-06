@@ -13,3 +13,27 @@ package.json
 - what are dependencies
 - what is the use of "-g" while npm install 
 - difference b/w caret and tilda (~ vs ^)
+
+
+## Github homework
+
+- initialize git
+- create a gitignore file and put file and folder which we don't want to push on the github
+- create a remote repo on github and connect the local repo with this remote repo 
+- push all the local repo on the remote repo.
+- play with the routes and routes extensions ex. /hello, / , /hello/2, /xyz
+
+
+## Important Lesson 
+- order of the routes matter most
+
+
+
+## HTTP methods
+- Install Postman app and make a workspace/collection => test API calls
+- Write Logic to handle GET, POST , PATCH, PUT, DELETE and test them on Postman
+- POST
+- GET
+- PATCH
+- PUT
+- DELETE
