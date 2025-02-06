@@ -24,6 +24,7 @@ package.json
 - play with the routes and routes extensions ex. /hello, / , /hello/2, /xyz
 
 
+
 ## Important Lesson 
 - order of the routes matter most
 
@@ -37,3 +38,9 @@ package.json
 - PATCH
 - PUT
 - DELETE
+
+## API routes
+- Exploring routing and use of ?, +, *, (), in the routes
+- use of regex in routes /a/, /.*fly$/
+- reading the query params in the routes
+- reading the dynaminc routes

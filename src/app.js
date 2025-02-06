@@ -12,21 +12,22 @@ app.use("/user",(req, res) => {
 })
 
 // this will only handle the GET call to the user
-app.get("/user", (req, res) => {
-    res.send({ firstName: "Naveen", lastName: "Singh" });
+app.get("/ab?c", (req, res) => {
+    res.send({
+        name: "Naveen",
+        age: 20
+    })
 })
-app
 
-app.post("/user", (req, res) => {
-    // sving data to DB
-    res.send("Data Successfully saved to databse");
-    
-});
+/*
+? , +  , * all have diffrent meanings and can be used in creating routes and we can also group them together 
+ex - /ab?c -> /abc , /abbc {b is optional parameter}
+- /ab+c -> /abc , /abbc , /abbbbc {b can be repeated any number of times}
+- /ab*cd -> abkasjkdhcd {you can add anything in between ab and cd}
+*/
 
-app.delete("/user", (req, res) => {
-    res.send("Data Successfully deleted from databse");
-});
-    
+
+
 
 app.listen(3000, () => {
     console.log("Server is running on the port 3000..");
