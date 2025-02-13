@@ -4,28 +4,50 @@ const express = require('express');
 // create a new application of express js 
 const app = express();
 
-// handling request
 
-// this will match all the HTTP method API calls to test
-app.use("/user",(req, res) => {
-    res.send("HAHAHAHHHAA...")
-})
-
-// this will only handle the GET call to the user
-app.get("/ab?c", (req, res) => {
-    res.send({
-        name: "Naveen",
-        age: 20
-    })
-})
+// handling routes
 
 /*
-? , +  , * all have diffrent meanings and can be used in creating routes and we can also group them together 
-ex - /ab?c -> /abc , /abbc {b is optional parameter}
-- /ab+c -> /abc , /abbc , /abbbbc {b can be repeated any number of times}
-- /ab*cd -> abkasjkdhcd {you can add anything in between ab and cd}
-*/
+multpli route handlers signatures r1 r2 r3 r4 r5 reperesent request handler functions
+app.use('/user' , r1 , r2 , r3 , r4 , r5);
+or
+app.use('/user' , [r1 , r2 , r3 , r4 , r5]);
+or
+app.use('/user' , (r1 , r2 , r3 , r4 , r5));
+or
+app.use('/user' , [r1 , r2 , r3 , r4] , r5);
+ */
 
+app.use(
+  "/user",
+  [(req, res, next) => {
+    console.log("Handling the route user 1");
+    next();
+    // res.send("Response from the user route handler 1");
+  },
+  (req, res, next) => {
+    console.log("Handling the route user 2");
+    //   res.send("Response from the user route handler 2");
+    next();
+  },
+],
+  (req, res, next) => {
+    console.log("Handling the route user 3");
+    // res.send("Response from the user route handler 3");
+    next();
+  },
+
+  (req, res, next) => {
+    console.log("Handling the route user 4");
+    // res.send("Response from the user route handler 4");
+    next();
+  },
+  (req, res, next) => {
+    console.log("Handling the route user 5");
+    res.send("Response from the user route handler 5");
+    // next();
+  }
+);
 
 
 

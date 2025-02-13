@@ -44,3 +44,21 @@ package.json
 - use of regex in routes /a/, /.*fly$/
 - reading the query params in the routes
 - reading the dynaminc routes
+
+
+
+
+/*
+? , +  , * all have diffrent meanings and can be used in creating routes and we can also group them together 
+ex - /ab?c -> /abc , /abbc {b is optional parameter}
+- /ab+c -> /abc , /abbc , /abbbbc {b can be repeated any number of times}
+- /ab*cd -> abkasjkdhcd {you can add anything in between ab and cd}
+*/
+
+
+## Middleware and Error handler
+
+- Multiple route handlers - play with the code 
+- next()
+- next function and errors along with the res.send()
+- app.use('/route', rH, [rH2, rH3], rH4, rH4);
