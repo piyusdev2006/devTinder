@@ -62,3 +62,15 @@ ex - /ab?c -> /abc , /abbc {b is optional parameter}
 - next()
 - next function and errors along with the res.send()
 - app.use('/route', rH, [rH2, rH3], rH4, rH4);
+
+
+/*
+multpli route handlers signatures r1 r2 r3 r4 r5 reperesent request handler functions
+app.use('/user' , r1 , r2 , r3 , r4 , r5);
+or
+app.use('/user' , [r1 , r2 , r3 , r4 , r5]);
+or
+app.use('/user' , (r1 , r2 , r3 , r4 , r5));
+or
+app.use('/user' , [r1 , r2 , r3 , r4] , r5);
+ */
