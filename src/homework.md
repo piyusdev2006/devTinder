@@ -81,3 +81,4 @@ app.use('/user' , [r1 , r2 , r3 , r4] , r5);
 - app.use()  vs app.all() there is small difference b/w routing
 - write a dummy auth midddleware for admin
 - write a dummy auth middleware for user
+- error handling using app.use('/', (err , req, res, next) => {}); put these lines at the end of the code
