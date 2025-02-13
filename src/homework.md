@@ -74,3 +74,10 @@ app.use('/user' , (r1 , r2 , r3 , r4 , r5));
 or
 app.use('/user' , [r1 , r2 , r3 , r4] , r5);
  */
+
+
+- what is middlewares
+- how express js handles request behind the scenes 
+- app.use()  vs app.all() there is small difference b/w routing
+- write a dummy auth midddleware for admin
+- write a dummy auth middleware for user
