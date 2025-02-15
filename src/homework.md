@@ -82,3 +82,22 @@ app.use('/user' , [r1 , r2 , r3 , r4] , r5);
 - write a dummy auth midddleware for admin
 - write a dummy auth middleware for user
 - error handling using app.use('/', (err , req, res, next) => {}); put these lines at the end of the code
+
+
+
+## Database homeworkk
+
+- create freec cluster on MongoDB official website (mongo atlas)
+- Install mongoDB comapass
+- Create a config Folder for database configuration with database,js file :- config/database.js
+- connect your application to the database "connectionString/devTinder"
+- call the connectToDB fucntion and connect to database before starting application on 3000
+- create a User Schema & user Model
+- create /signup API to add data to database
+- push some data using API calls from POSTMAN
+- do some error handling using try-catch
+
+
+- Javascript object vs JSON object {differences}
+- Add the express.json() middleware to your app
+- Make your signup API to receive data from the end User{server , browser, console}

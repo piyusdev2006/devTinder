@@ -1,41 +1,48 @@
 // importing express module 
 const express = require('express');
-const { adminAuth, userAuth } = require('./middlewares/auth.js');
-
-// create a new application of express js 
+const { connectToDB } = require('./config/database');
 const app = express();
+const User = require('./models/user');
+
+// 
+
+app.use(express.json());
 
 
-app.use("/", (err, req, res, next) => {
-  if (err) {
-    // Log your error message here
-    res.status(500).send("Something went wrong");
+app.post('/signup', async (req, res) => {
+  /*
+  console.log(req.body );
+  req.body is exactly same as the given defined object which we send through postman
+  {
+    firstName: "Naveen",
+    lastName: "Singh",
+    email: "FtYlS@example.com",
+    password: "123456",
+  */
+
+  // creating a new instance of the User Model
+  const user = new User(req.body);
+
+  // always use try-catch whenever make an asynchronous call
+  try {
+    // saving the user in the database
+    await user.save();
+    res.send("User saved successfully");
+  } catch (error) {
+    res.status(500).send("Error saving  the user: ", error.message);
   }
-});
-
-// handling request
-app.get('/getUserData', (req, res) => {
-    // try {
-      // logic of DB call and get user data
-
-      throw new Error("Something went wrong");
-      res.send("User Data sent");
-        
-//     } catch (error) {
-//         res.status(500).send("Something went wrong");
-//    }
-    
 })
 
-// Order of parameters matter here
-app.use("/", (err, req, res, next) => {
-  if (err) {
-    // Log your error message here
-    res.status(500).send("Something went wrong");
-  }
+
+connectToDB()
+    .then(() => {
+      console.log("Database connection successful");
+      app.listen(3000, () => {
+        console.log("Server is running on the port 3000..");
+      });
+    })
+    .catch((err) => {
+  console.error("Database connection lost");
 });
 
-app.listen(3000, () => {
-    console.log("Server is running on the port 3000..");
-    
-});
+
