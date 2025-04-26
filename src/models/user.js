@@ -3,27 +3,30 @@ const mongoose = require("mongoose");
 
 // userSchema creation 
 const userSchema = new mongoose.Schema(
-    {
-        firstName: {
-            type: String,
-        },
-        lastName: {
-            type: String,
-        },
-        email: {
-            type: String,
-        },
-        password: {
-            type: String,
-        },
-        age: {
-            type: Number,
-        },
-        gender: {
-            type: String,
-        }
+  {
+    firstName: {
+      type: String,
+      required: true,
     },
-    { timestamps: true }
+    lastName: {
+      type: String,
+    },
+    email: {
+      type: String,
+      required: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    age: {
+      type: Number,
+    },
+    gender: {
+      type: String,
+    },
+  },
+  { timestamps: true }
 );
 
 
