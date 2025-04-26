@@ -28,7 +28,7 @@ app.post('/signup', async (req, res) => {
     await user.save();
     res.send("User saved successfully");
   } catch (error) {
-    res.status(500).send("Error saving  the user: ", error.message);
+    res.status(500).send("Error saving  the user: " + error.message);
   }
 });
 
@@ -54,7 +54,7 @@ app.get("/user", async (req, res) => {
     //   res.send(users);
     // }
   } catch (error) {
-    res.status(400).send("server error")
+    res.status(400).send("server error" + error.message)
   }
 });
 
@@ -66,7 +66,7 @@ app.get("/feed", async (req, res) => {
     res.send(users);
     
   } catch (error) {
-    res.status(400).send("server error");
+    res.status(400).send("server error" + error.message);
   }
 });
 
@@ -80,26 +80,53 @@ app.delete("/user", async (req, res) => {
     res.status(200).send("user deleted successfully");
 
   } catch (error) {
-    res.status(400).send("something went wrong");
+    res.status(400).send("something went wrong" + error.message);
   }
 });
 
 // Update data of the User
-app.patch("/user", async (req, res) => {
-  const userId = req.body.userId;
+app.patch("/user/:userId", async (req, res) => {
+  const userId = req.params?.userId;
   const data = req.body;
+
   try {
+    const ALLOWED_UPDATE = [
+      "photoUrl",
+      "about",
+      "gender",
+      "age",
+      "skills",
+      "password"
+    ];
+
+    const isUpdateAllowed = Object.keys(data).every(
+      (k) => ALLOWED_UPDATE.includes(k)
+    );
+    
+    if (!isUpdateAllowed) {
+      throw new Error("update not allowed")
+    }
+     
+    const { skills } = req.body;
+    if (skills && skills.length > 7) {
+      return res
+        .status(400)
+        .json({ message: "You can only provide up to 7 skills." });
+    }
     // update document by passing options and it will return the document after or before as per the given option 
     // const user = await User.findByIdAndUpdate({ _id: userId }, data, { returnDocument: "before" });
     // console.log(user);
     
     // update without passing options and it will return the document before update by default
-    const user1 = await User.findByIdAndUpdate({ _id: userId }, data);
-    console.log(user1);
+    const user = await User.findByIdAndUpdate({ _id: userId }, data, {
+      returnDocument: "after",
+      runValidators: true,
+    });
+    console.log(user);
     res.send("user updated sucessfully");
     
   } catch (error) {
-    res.status(400).send("something went wrong");
+    res.status(400).send("UPDATE FAILED: " + error.message);
   }
 })
 

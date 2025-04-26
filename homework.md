@@ -114,3 +114,17 @@ app.use('/user' , [r1 , r2 , r3 , r4] , r5);
 
 
 ## Data Sanitiztion and schema validation
+# schema validation
+- Explore scehmatype options from the mongoose documentation
+- add validation like required, trim, min, minLength , maxLength, lowercase, unique
+- Add default
+- Create a custom validate function for gender and add runValidators in API
+- Improve the DB schema Put all appropriate validations on each feild in schema
+- Add timestamp in user schema 
+- Data Sanitizaton - Add API validation on patch request and signup post api
+- Add API validation for each feild
+- install validator npm pakage
+- Explore validator library functions and use validator funcs for password, email, photoUrl
+
+
+## 
