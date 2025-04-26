@@ -1,18 +1,15 @@
+require("dotenv").config();
 
-// here we import mongoose 
+// here we import mongoose
 const mongoose = require("mongoose");
 
-
 // to connect to  cluster NamasteNoodejs ,simplr query is :
-// const MONGODB_URL = process.env.MONGODB_URI;
+const MONGODB_URL = process.env.MONGODB_URI;
 
 const connectToDB = async () => {
-   await mongoose.connect(
-     "mongodb+srv://NamasteNode:namaste123@akshaysaininode.ycri0.mongodb.net/devTinder"
-   ); 
-} 
+  await mongoose.connect(
+    MONGODB_URL
+  );
+};
 
-module.exports = connectToDB ;
-
-
-
+module.exports = connectToDB;
