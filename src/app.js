@@ -1,36 +1,49 @@
 // importing express module 
 const express = require('express');
-const connectToDB  = require('./config/database');
+const { connectToDB }  = require('./config/database');
 const app = express();
 const User = require('./models/user');
+const { validateSignUpData } = require('./utils/validation');
+const bcrypt = require('bcryptjs');
 
 
 app.use(express.json());
 
-
+// creation and validation of signUp API and password encryption is also done
 app.post('/signup', async (req, res) => {
-  /*
-  console.log(req.body );
-  req.body is exactly same as the given defined object which we send through postman
-  {
-    firstName: "Naveen",
-    lastName: "Singh",
-    email: "FtYlS@example.com",
-    password: "123456",
-  */
-
-  // creating a new instance of the User Model
-  const user = new User(req.body);
-
-  // always use try-catch whenever make an asynchronous call
   try {
+    // validation of data
+    validateSignUpData(req);
+
+    const { firstName, lastName, email, password } = req.body;
+    
+    // Encrypt the password
+    const passwordHash = await bcrypt.hash(password, 10);
+    console.log(passwordHash);
+  
+
+    // creating a new instance of the User Model
+    const user = new User({
+      firstName,
+      lastName,
+      email,
+      password: passwordHash,
+    });
+
+    // always use try-catch whenever make an asynchronous call
+
     // saving the user in the database
     await user.save();
     res.send("User saved successfully");
-  } catch (error) {
-    res.status(500).send("Error saving  the user: " + error.message);
-  }
+} catch (error) {
+    res.status(400).send("Error: " + error.message);
+}
 });
+
+// creating login API
+app.post("/login", (req, res) => {
+  
+})
 
 // Get User by email
 app.get("/user", async (req, res) => {

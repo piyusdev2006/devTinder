@@ -128,3 +128,9 @@ app.use('/user' , [r1 , r2 , r3 , r4] , r5);
 
 
 ## Never trust req.body
+
+# Encrypting Password
+- Validating SignUp API data by creating helper function
+- Install bcrypt package 
+- create a passwordHash using bcrypt.hash() and save the encrypted password of the user...
+- 
