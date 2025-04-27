@@ -133,4 +133,5 @@ app.use('/user' , [r1 , r2 , r3 , r4] , r5);
 - Validating SignUp API data by creating helper function
 - Install bcrypt package 
 - create a passwordHash using bcrypt.hash() and save the encrypted password of the user...
-- 
+- create login API
+- Compare password and throw errors if email or password is invalid

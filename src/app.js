@@ -5,6 +5,7 @@ const app = express();
 const User = require('./models/user');
 const { validateSignUpData } = require('./utils/validation');
 const bcrypt = require('bcryptjs');
+const validator = require('validator')
 
 
 app.use(express.json());
@@ -40,9 +41,36 @@ app.post('/signup', async (req, res) => {
 }
 });
 
-// creating login API
-app.post("/login", (req, res) => {
-  
+// creating login API with basic authentication
+app.post("/login", async(req, res) => {
+  try {
+    // Extracting emil and password from req.body for logging
+    const { email, password } = req.body;
+
+    // validating the email
+    if (!validator.isEmail(email)) {
+      throw new Error("Invalid credential.")
+    }
+
+    // checking that the user exist in database or not
+    const user = await User.findOne({ email: email });
+    if (!user) {
+      throw new Error("Invalid credential.");
+    }
+
+    // validating password by using bcrypt.compare() function
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    
+    if (isPasswordValid) {
+      res.send("Login Successful !!!!");
+    }
+    else {
+      throw new Error("Invalid credential.");
+    }
+
+  } catch (error) {
+    res.status(400).send("Error logging in :" + error.message)
+  }
 })
 
 // Get User by email
