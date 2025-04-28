@@ -135,3 +135,11 @@ app.use('/user' , [r1 , r2 , r3 , r4] , r5);
 - create a passwordHash using bcrypt.hash() and save the encrypted password of the user...
 - create login API
 - Compare password and throw errors if email or password is invalid
+
+
+##  Authentication , JWT and Cookies
+- Install cookie-parser and require in app.js and send dummy cookie from login API
+- create a GET/profile API and check if you get the cookie back
+- Install jsonwebtoken and require in app.js
+- In login API , after email and password validation, create a JWT token and send it to user in cookies
+- read the cookies inside your profile API and find the logged in user

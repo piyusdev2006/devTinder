@@ -5,10 +5,13 @@ const app = express();
 const User = require('./models/user');
 const { validateSignUpData } = require('./utils/validation');
 const bcrypt = require('bcryptjs');
-const validator = require('validator')
-
-
+const validator = require('validator');
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+ 
+// middlewares
 app.use(express.json());
+app.use(cookieParser());
 
 // creation and validation of signUp API and password encryption is also done
 app.post('/signup', async (req, res) => {
@@ -19,9 +22,7 @@ app.post('/signup', async (req, res) => {
     const { firstName, lastName, email, password } = req.body;
     
     // Encrypt the password
-    const passwordHash = await bcrypt.hash(password, 10);
-    console.log(passwordHash);
-  
+    const passwordHash = await bcrypt.hash(password, 10);  
 
     // creating a new instance of the User Model
     const user = new User({
@@ -42,36 +43,71 @@ app.post('/signup', async (req, res) => {
 });
 
 // creating login API with basic authentication
-app.post("/login", async(req, res) => {
+app.post("/login", async (req, res) => {
   try {
     // Extracting emil and password from req.body for logging
     const { email, password } = req.body;
 
-    // validating the email
-    if (!validator.isEmail(email)) {
-      throw new Error("Invalid credential.")
-    }
-
     // checking that the user exist in database or not
     const user = await User.findOne({ email: email });
     if (!user) {
+      throw new Error("User doesn't exist.");
+    }
+
+    // validating the email
+    if (!validator.isEmail(email)) {
       throw new Error("Invalid credential.");
     }
 
     // validating password by using bcrypt.compare() function
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    
+
     if (isPasswordValid) {
+      // create a JWT Token
+      const token = await jwt.sign({ _id: user._id }, "Strong@786");
+
+      // sending cookies along with Jwt token to user
+      res.cookie("token", token);
+
+      // sending response back to the user
       res.send("Login Successful !!!!");
-    }
-    else {
+    } else {
       throw new Error("Invalid credential.");
     }
-
   } catch (error) {
     res.status(400).send("Error logging in :" + error.message)
   }
-})
+});
+
+// GET/profile --> getting profile of users
+app.post("/profile", async (req, res) => {
+  try {
+    // Extracting cookies
+    const cookies = req.cookies;
+
+    // Extracting token from cookies
+    const { token } = cookies;
+    if (!token) {
+      throw new Error("Invalid Token");
+    }
+
+    // verifying token that it is valid token or not 
+    const verifyingToken = await jwt.verify(token, "Strong@786");
+    // console.log("verified token is: ", verifyingToken);
+    
+    const { _id } = verifyingToken;
+    
+    const user = await User.findById(_id);
+    if (!user) {
+      throw new Error("Invalid User");
+    }
+    
+    res.send(user);
+
+  } catch (error) {
+    res.status(400).send("Error: " + error.message);
+  }
+});
 
 // Get User by email
 app.get("/user", async (req, res) => {
@@ -177,7 +213,7 @@ connectToDB()
       console.log("Database connection successful");
       app.listen(3000, () => {
         console.log("Server is running on the port 3000..");
-      });
+      }); 
     })
     .catch((err) => {
   console.error("Database connection lost");
