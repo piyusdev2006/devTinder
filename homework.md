@@ -143,3 +143,9 @@ app.use('/user' , [r1 , r2 , r3 , r4] , r5);
 - Install jsonwebtoken and require in app.js
 - In login API , after email and password validation, create a JWT token and send it to user in cookies
 - read the cookies inside your profile API and find the logged in user
+- Write the userAuth middleware 
+- add the userAuth middleware in profile API and a new sendConnectionRequest API
+-  set the expiry of JWT token and cookies to 7 days
+- create userSchema methods to getJWT() 
+- create userSchema methods to comparePassword(passwordInputByUser) 
+
