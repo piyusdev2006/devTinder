@@ -149,3 +149,17 @@ app.use('/user' , [r1 , r2 , r3 , r4] , r5);
 - create userSchema methods to getJWT() 
 - create userSchema methods to comparePassword(passwordInputByUser) 
 
+## Diving into the APIs and the express.Router()
+
+- Explore the tinder API in developer console
+
+- create a list of APIs you can think of ur own in devtinder
+-  Group multiple routes under respective or specific router
+- Making the habit of exploring the APIs of almost daily used websites like banking , e-commerce , social media and many others in developer console
+
+- Name your APIs properly which helps in categorise and Grouping in a Specific Router . it will also helps to avoid confusion just by reading the API i can understand what this API is doing..
+
+- Read documentation for express.Router();
+- create routes/folder for managing auth , profile and connectionRequest routers
+- create auth router, profile router, connectionRequest router
+- import these router in our app.js
