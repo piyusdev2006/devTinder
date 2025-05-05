@@ -38,7 +38,6 @@ authRouter.post("/signup", async (req, res) => {
 
 
 
-
 // creating login API with basic authentication
 authRouter.post("/login", async (req, res) => {
   try {
@@ -80,5 +79,15 @@ authRouter.post("/login", async (req, res) => {
 });
 
 
+// creating logout API just by expiring the token
+authRouter.post("/logout", async (req, res) => {
+  // for big application logout APIs need cleanup activities like some logs and sessions from DB
+  res
+    .cookie("token", null, {
+      expires: new Date(Date.now()),
+    })
+    // .send(); // here we can chain the response
+  res.send("Logout Successful..");
+})
 
 module.exports = authRouter;
