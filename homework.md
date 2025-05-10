@@ -163,3 +163,18 @@ app.use('/user' , [r1 , r2 , r3 , r4] , r5);
 - create routes/folder for managing auth , profile and connectionRequest routers
 - create auth router, profile router, connectionRequest router
 - import these router in our app.js
+
+
+## Logical db query & compound indexes
+- create a connectionRequestSchema
+- create a connectionRequest Model
+- Send connection request API
+- proper validation on data
+- Think about all corner cases and handle them
+- Read about {$or} and {$and} in mongoose
+- read about schema.pre() and schema.post() functions
+
+- read more about indexes in mongodb
+- why do we need indexes in database
+- advantages and disadvantages of creating indexes
+- read about compound indexes and how to create them

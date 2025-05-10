@@ -80,6 +80,11 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+
+// creating compound index for email
+// userSchema.index({ email: 1 }, { unique: true });
+
+
 // JWT Handler
 userSchema.methods.getJWT = async function () {
 

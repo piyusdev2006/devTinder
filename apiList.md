@@ -18,8 +18,8 @@
 - - only for password
 
 ## connectionRequestRouter
-- POST/request/send/interested/:userId
-- POST/request/send/ignored/:userId
+- POST/request/send/:status/:userId  -- ignored
+- POST/request/send/:status/:userId -- intrested
 - POST/request/review/accepted/:requestId
 - POST/request/review/rejected/:requestId
 
