@@ -14,7 +14,7 @@ connectionRequestRouter.post(
       const { toUserId } = req.params;
       const { status } = req.params;
 
-      const allowedStatus = ["intrested", "ignored"];
+      const allowedStatus = ["interested", "ignored"];
       if (!allowedStatus.includes(status)) {
         return res.status(400).json({
           message: " Invalid status",
@@ -58,13 +58,56 @@ connectionRequestRouter.post(
 
       // saving the connectionRequest in the database
       const data = await connectionRequest.save();
-      res.status(200).json({
-        message: `${req.user.firstName} is ${status} ${toUser.firstName}`,
+      res.status(201).json({
+        message: "connection request sent successfully",
         data,
       });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
   });
+
+
+// review connection request : accept / reject
+connectionRequestRouter.post("/request/review/:status/:requestId" , userAuth, async(req, res) => {
+  try {
+    const loggedInUser = req.user;
+    const { status, requestId } = req.params;
+
+    // validate the status
+    const allowedStatus = ["accepted", "rejected"];
+    if (!allowedStatus.includes(status)) {
+      return res.status(400).json({
+        message: "Invalid status",
+      });
+    }
+
+    const connectionRequest = await ConnectionRequest.findOne({
+      _id: requestId,
+      toUserId: loggedInUser._id,
+      status: "interested",
+    });
+
+    if (!connectionRequest) {
+      return res.status(404).json({
+        message: "Connection request not found",
+      });
+    }
+    
+    connectionRequest.status = status;
+
+    const data = await connectionRequest.save();
+
+    res.status(200).json({
+      message: `${loggedInUser.firstName} ${status} ${connectionRequest.fromUserId.firstName}'s connection request`,
+      data,
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
 
 module.exports = connectionRequestRouter;

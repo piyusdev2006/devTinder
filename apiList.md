@@ -18,10 +18,10 @@
 - - only for password
 
 ## connectionRequestRouter
-- POST/request/send/:status/:userId  -- ignored
-- POST/request/send/:status/:userId -- intrested
-- POST/request/review/accepted/:requestId
-- POST/request/review/rejected/:requestId
+- POST/request/send/:status/:userId  -- status:{ignored/intrested}
+
+- POST/request/review/:status/:requestId -- status:{accepted/rejected}
+
 
 ## userRouter
 - GET/user/connections 
