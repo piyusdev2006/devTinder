@@ -1,6 +1,6 @@
 // importing express module
 const express = require("express");
-const { connectToDB } = require("./config/database");
+const { connectToDB } = require("./config/database.js");
 const app = express();
 const cookieParser = require("cookie-parser");
 
@@ -13,11 +13,13 @@ app.use(cookieParser());
 const authRouter = require("./routes/auth.routes.js");
 const profileRouter = require("./routes/profile.routes.js");
 const connectionRequestRouter = require("./routes/connectionRequest.routes.js");
+const userRouter = require("./routes/user.routes.js");
 
 // using the routes
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", connectionRequestRouter);
+app.use("/", userRouter);
 
 
 connectToDB()

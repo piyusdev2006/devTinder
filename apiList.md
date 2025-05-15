@@ -24,10 +24,11 @@
 
 
 ## userRouter
+
+- GET/user/requests/received
+- - for getting all the request coming to our profile
 - GET/user/connections 
 - - getting all the connections
-- GET/user/requests/received/:requestId 
-- - for getting all the request coming to our profile
 - GET/user/feed 
 - - Get you the profiles of other users on your feed
 

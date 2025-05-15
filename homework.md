@@ -173,6 +173,7 @@ app.use('/user' , [r1 , r2 , r3 , r4] , r5);
 - Think about all corner cases and handle them
 - Read about {$or} and {$and} in mongoose
 - read about schema.pre() and schema.post() functions
+- ALWAYS THINK ABOUT CORNER CASES AND HANDLE THEM
 
 - read more about indexes in mongodb
 - why do we need indexes in database
@@ -182,3 +183,38 @@ app.use('/user' , [r1 , r2 , r3 , r4] , r5);
 
 ## Ref , Populate and thoughts process of Writng APIs
 - write code with proper validation of this API "/request/review/:status/:requestId"
+- Thoughts process of writing APIs : GET vs POST
+- ref and populate the user model in connectionRequestSchema and how the relationship is created
+
+- building the feed API 
+// user should see all the user cards except
+    // 0. his own user card
+    // 1. his own connections 
+    // 2. ignored people (jinko ignore kr diya hai)
+    // 3. already sent connection requests to someone
+    // 4. already received connection requests from someone
+    
+    // example : Piyush , Neha , Rohit , virat , Khushi -- all are registered user
+    // Anu is a new user coming to our platform he see the cards of all the above registered users except himself at initial level
+    // Anu ->(connection sent) piyush ->(status) accepted  then both of them will not see each other's cards on their profile
+    // Anu ->(connection sent) neha ->(status) rejected  then both of them will not see each other's cards on their profile
+    //in Piyush feed  : Neha , Rohit , virat , Khushi except Anu
+    //in Neha feed  : Piyush , Rohit , virat , Khushi except Anu
+
+    - Logic to build the feed API -> GET/user/feed
+    - Explore the $nin  and $ne operators in mongoose
+
+    - Pagination in the feed API 
+
+    - /user/feed?page=1&limit=10  .skip(0)&limit(10)
+    - :- it returns the first 10 user on the feed page 1
+    - skip = (pageNumber - 1) * limit
+
+    - /user/feed?page=1&limit=10   .skip(10)&limit(10)
+    - :- it returns the next 10 user on the feed page 2 from 11 to 20
+
+    - In mongodb we have two most important function 
+    - skip() function: to skip the first n records and 
+    - limit() function: to limit the number of records to max m records
+
+
