@@ -125,7 +125,6 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
     }).
       select(USER_SAFE_DATA).skip(skip)
       .limit(limit);
-    console.log(userFeed);
     
 
     res.send(userFeed);

@@ -7,7 +7,7 @@ const bcrypt = require("bcryptjs");
 
 
 // GET/profile --> getting profile of users
-profileRouter.post("/profile/view", userAuth, async (req, res) => {
+profileRouter.get("/profile/view", userAuth, async (req, res) => {
   try {
     const user = req.user;
     res.send(user);
