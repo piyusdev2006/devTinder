@@ -61,30 +61,21 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
         { toUserId: loggedInUser._id, status: "accepted" },
       ],
     })
-        .populate("fromUserId", USER_SAFE_DATA)
-        .populate("toUserId", USER_SAFE_DATA);
-      
-      const data = connectionReuqests.map((request) => {
-        if(request.fromUserId._id.toString() === loggedInUser._id.toString()) {
-          return {
-            _id: request._id,
-            status: request.status,
-            toUserId: request.toUserId,
-          };
-        } else {
-          return {
-            _id: request._id,
-            status: request.status,
-            fromUserId: request.fromUserId,
-          };
-        }
+      .populate("fromUserId", USER_SAFE_DATA)
+      .populate("toUserId", USER_SAFE_DATA);
+
+
+    // 🔄 Modified: return the other user's object directly
+    const data = connectionReuqests.map((request) => {
+      return request.fromUserId._id.toString() === loggedInUser._id.toString()
+        ? request.toUserId
+        : request.fromUserId;
     });
-      
+
     res.status(200).json({
       message: "Connection requests fetched successfully",
       data,
     });
-      
   } catch (error) {
     res.status(400).json("Error: " + error.message);
   }
