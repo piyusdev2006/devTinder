@@ -86,7 +86,12 @@ connectionRequestRouter.post("/request/review/:status/:requestId" , userAuth, as
       _id: requestId,
       toUserId: loggedInUser._id,
       status: "interested",
-    });
+    })
+      // we can populate the fromuserId complete object details so that we can send the customised message
+
+      // another way is given in the message response instead of writing this "connectionRequest.fromUserId.firstName", write this "use fromUser.firstName in your response" you will get the response 
+
+      .populate("fromUserId");
 
     if (!connectionRequest) {
       return res.status(404).json({
@@ -99,7 +104,7 @@ connectionRequestRouter.post("/request/review/:status/:requestId" , userAuth, as
     const data = await connectionRequest.save();
 
     res.status(200).json({
-      message: `${loggedInUser.firstName} ${status} ${connectionRequest.fromUserId.firstName}'s connection request`,
+      message: `${loggedInUser.firstName} ${status} ${fromUserId.firstName}'s connection request`,
       data,
     });
 
