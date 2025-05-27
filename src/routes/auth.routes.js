@@ -26,11 +26,19 @@ authRouter.post("/signup", async (req, res) => {
       password: passwordHash,
     });
 
-    // always use try-catch whenever make an asynchronous call
+    // saving the user in the database and passing the token and send back the user 
+    const savedUser = await user.save();
+    const token = await savedUser.getJWT();
+    res.cookie("token", token, {
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in ms
+    });
 
-    // saving the user in the database
-    await user.save();
-    res.send("User saved successfully");
+    res.json(
+      {
+        message: "user added successfully",
+        data: savedUser
+      }
+    );
   } catch (error) {
     res.status(400).send("Error: " + error.message);
   }
