@@ -66,3 +66,56 @@
 - copy code from dist(build files) to /var/www/html
 - use this way to copy and paste -> "scp -r dist/* /var/www/html/"
 - Enable PORT : 80 of Your Instance
+
+## Backend Deployment
+- update db password
+- allowed ec2 instance public IP on mongoDB Server
+-> pm2 is a prpcess manager which runs the server forever , manage the process and keep it running 24/7
+- "npm install pm2 -g" -> install the pm2 package manager
+- "pm2 start npm -- start" :- it runs the process  by default 
+- "pm2 start npm --name "devSpherebackend" -- start" :- it starts the pm2 process with the custom name
+- "pm2 logs" -> to check the logs 
+- "pm2 flush npm" :- npm is process application name which is in our case(npm) -> it clear all the logs related to our running application
+- "pm2 stop npm"  -> it stops the running processes
+- "pm2 delete npm" -> it delete the pm2 processes
+
+
+## Till here things goes like this
+
+- our frontend and backend running on AWS like this
+
+- Frontend running: http://65.2.57.49/
+- Backend running: http://65.2.57.49:3000/
+
+- Now if we map the IP with Domain Name (DNS) , it look like this.' 
+- Domain Name => devSphere.com => 65.2.57.49
+
+- Frontend running: devSphere.com
+- Backend running: devSphere.com:3000
+
+- map the backend with :- devSphere.com:3000 => devSphere.com/api 
+
+-nginx configuration to map the /api with the backend running PORT:3000
+- run this command to edit the nginx congix file at root level or at EC2 machine level: 
+- sudo nano /etc/nginx/sites-available/default 
+
+- and configure this things very care fully
+
+- server {
+    listen 80;
+    server_name yourdomain.com || Your piblic IP : 65.2.57.49;
+
+    location /api/ {
+        proxy_pass http://localhost:3000/;  # Forward requests to Node.js on port 3000
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+    additional configurstion goes here
+}
+
+- After configuration restart nginx run this command : "sudo systemctl restart nginx"
+
+- Modify the base url in frontend project from "http://localhost:3000" with "/api"
