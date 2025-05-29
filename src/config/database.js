@@ -4,11 +4,11 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 
 // to connect to  cluster NamasteNoodejs ,simplr query is :
-const MONGODB_URL = process.env.MONGODB_URI;  // password updated with this "?retryWrites=true&w=majority"
+const MONGODB_URI = process.env.MONGODB_URL;  // password updated with this "?retryWrites=true&w=majority"
 
 const connectToDB = async () => {
   await mongoose.connect(
-    MONGODB_URL              
+    MONGODB_URI              
   );
 };
 
