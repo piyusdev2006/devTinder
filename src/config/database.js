@@ -5,14 +5,12 @@ const mongoose = require("mongoose");
 
 // to connect to  cluster NamasteNoodejs ,simplr query is :
 
-// const MONGODB_URI = ;
+const MONGODB_URI = process.env.MONGODB_URL.trim();
 
 
 
 const connectToDB = async () => {
-  await mongoose.connect(
-    process.env.MONGODB_URL.trim()
-  );
+  await mongoose.connect('mongodb+srv://NamasteNode:ShOhQNzmIQq3z5JG@akshaysaininode.ycri0.mongodb.net/devTinder?retryWrites=true&w=majority');
 };
 
 module.exports = {
