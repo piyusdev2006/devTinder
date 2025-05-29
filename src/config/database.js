@@ -5,11 +5,13 @@ const mongoose = require("mongoose");
 
 // to connect to  cluster NamasteNoodejs ,simplr query is :
 
-const MONGODB_URI = process.env.MONGODB_URL;  // password updated with this "?retryWrites=true&w=majority"
+// const MONGODB_URI = ;
+
+
 
 const connectToDB = async () => {
   await mongoose.connect(
-    MONGODB_URI
+    process.env.MONGODB_URL.trim()
   );
 };
 
