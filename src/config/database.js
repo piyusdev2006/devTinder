@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 
 // to connect to  cluster NamasteNoodejs ,simplr query is :
 
-const MONGODB_URI = process.env.MONGODB_URL.trim();
+const MONGODB_URI = process.env.MONGODB_URL;
 
 
 
