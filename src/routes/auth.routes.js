@@ -57,7 +57,7 @@ authRouter.post("/signup", async (req, res) => {
 // creating login API with basic authentication
 authRouter.post("/login", async (req, res) => {
   try {
-    validateLoginData(req);
+    // validateLoginData(req);
 
     // Extracting emil and password from req.body for logging
     const { email, password } = req.body;
