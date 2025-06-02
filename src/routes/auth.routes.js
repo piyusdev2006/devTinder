@@ -4,6 +4,7 @@ const User = require("../models/user.js");
 const { validateSignUpData } = require("../utils/validation.js");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 
 
@@ -15,7 +16,16 @@ authRouter.post("/signup", async (req, res) => {
 
     const { firstName, lastName, email, password } = req.body;
 
-    // Encrypt the password
+    // Check if user already exists
+    const existingUser = await User.findOne({ emailId });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "User already exists with this email",
+      });
+    }
+
+    // Hash the password
     const passwordHash = await bcrypt.hash(password, 10);
 
     // creating a new instance of the User Model
@@ -26,19 +36,17 @@ authRouter.post("/signup", async (req, res) => {
       password: passwordHash,
     });
 
-    // saving the user in the database and passing the token and send back the user 
+    // saving the user in the database and passing the token and send back the user
     const savedUser = await user.save();
     const token = await savedUser.getJWT();
     res.cookie("token", token, {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in ms
     });
 
-    res.json(
-      {
-        message: "user added successfully",
-        data: savedUser
-      }
-    );
+    res.json({
+      message: "user added successfully",
+      data: savedUser,
+    });
   } catch (error) {
     res.status(400).send("Error: " + error.message);
   }
@@ -49,13 +57,18 @@ authRouter.post("/signup", async (req, res) => {
 // creating login API with basic authentication
 authRouter.post("/login", async (req, res) => {
   try {
+    validateLoginData(req);
+
     // Extracting emil and password from req.body for logging
     const { email, password } = req.body;
 
     // checking that the user exist in database or not
     const user = await User.findOne({ email: email });
     if (!user) {
-      throw new Error("User doesn't exist.");
+      return res.status(400).json({
+        success: false,
+        message: "Invalid credentials",
+      });
     }
 
     // validating the email
@@ -77,7 +90,16 @@ authRouter.post("/login", async (req, res) => {
       });
 
       // sending response back to the user
-      res.send(user);
+      res.status(200).json({
+        success: true,
+        message: "Login successful",
+        user: {
+          _id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          emailId: user.email,
+        },
+      });
     } else {
       throw new Error("Invalid credential.");
     }
@@ -95,7 +117,10 @@ authRouter.post("/logout", async (req, res) => {
       expires: new Date(Date.now()),
     })
     // .send(); // here we can chain the response
-  res.send("Logout Successful..");
+    res.status(200).json({
+      success: true,
+      message: "Logout successful",
+    });
 })
 
 module.exports = authRouter;

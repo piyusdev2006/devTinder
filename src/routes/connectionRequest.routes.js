@@ -4,6 +4,11 @@ const { userAuth } = require("../middlewares/auth.middlewares.js");
 const ConnectionRequest = require("../models/connectionRequest.js");
 const User = require("../models/user.js");
 
+// Helper function to validate ObjectId
+const isValidObjectId = (id) => {
+  return mongoose.Types.ObjectId.isValid(id);
+};
+
 // sendConnection request  / ignored, intrested
 connectionRequestRouter.post(
   "/request/send/:status/:toUserId",
@@ -11,17 +16,27 @@ connectionRequestRouter.post(
   async (req, res) => {
     try {
       const fromUserId = req.user._id;
-      const { toUserId } = req.params;
-      const { status } = req.params;
+      const { toUserId, status } = req.params;
+
+      // Validate ObjectId format
+      if (!isValidObjectId(toUserId)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid user ID format",
+        });
+      }
 
       const allowedStatus = ["interested", "ignored"];
       if (!allowedStatus.includes(status)) {
         return res.status(400).json({
-          message: " Invalid status" + status
+          success: false,
+          message: `Invalid status: ${status}. Allowed values are: ${allowedStatus.join(
+            ", "
+          )}`,
         });
       }
 
-      // checking if the user is trying to send a connection request to random user who does not exist in the database
+      // Check if user exists
       const toUser = await User.findById(toUserId);
       if (!toUser) {
         return res.status(404).json({
@@ -29,7 +44,7 @@ connectionRequestRouter.post(
         });
       }
 
-      // checking if the user is trying to send a connection request to himself
+      // Check self-request
       if (fromUserId.toString() === toUserId.toString()) {
         return res.status(400).json({
           message: "You cannot send a connection request to yourself",
@@ -59,11 +74,15 @@ connectionRequestRouter.post(
       // saving the connectionRequest in the database
       const data = await connectionRequest.save();
       res.status(201).json({
+        success: true,
         message: "connection request sent successfully",
         data,
       });
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
     }
   });
 
@@ -74,11 +93,22 @@ connectionRequestRouter.post("/request/review/:status/:requestId" , userAuth, as
     const loggedInUser = req.user;
     const { status, requestId } = req.params;
 
+    // Validate ObjectId format
+    if (!isValidObjectId(requestId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid request ID format",
+      });
+    }
+
     // validate the status
     const allowedStatus = ["accepted", "rejected"];
     if (!allowedStatus.includes(status)) {
       return res.status(400).json({
-        message: "Invalid status",
+        success: false,
+        message: `Invalid status: ${status}. Allowed values are: ${allowedStatus.join(
+          ", "
+        )}`,
       });
     }
 
@@ -89,16 +119,17 @@ connectionRequestRouter.post("/request/review/:status/:requestId" , userAuth, as
     })
       // we can populate the fromuserId complete object details so that we can send the customised message
 
-      // another way is given in the message response instead of writing this "connectionRequest.fromUserId.firstName", write this "use fromUser.firstName in your response" you will get the response 
+      // another way is given in the message response instead of writing this "connectionRequest.fromUserId.firstName", write this "use fromUser.firstName in your response" you will get the response
 
-      .populate("fromUserId");
+      .populate("fromUserId", "firstName lastName");
 
     if (!connectionRequest) {
       return res.status(404).json({
+        success: false,
         message: "Connection request not found",
       });
     }
-    
+
     connectionRequest.status = status;
 
     const data = await connectionRequest.save();
@@ -107,9 +138,11 @@ connectionRequestRouter.post("/request/review/:status/:requestId" , userAuth, as
       message: `${loggedInUser.firstName} ${status} ${connectionRequest.fromUserId.firstName}'s connection request`,
       data,
     });
-
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 });
 
