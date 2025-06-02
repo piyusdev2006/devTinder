@@ -1,8 +1,14 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const connectionRequestRouter = express.Router();
 const { userAuth } = require("../middlewares/auth.middlewares.js");
 const ConnectionRequest = require("../models/connectionRequest.js");
 const User = require("../models/user.js");
+
+// Helper function to validate ObjectId
+const isValidObjectId = (id) => {
+  return mongoose.Types.ObjectId.isValid(id);
+};
 
 // sendConnection request  / ignored, intrested
 connectionRequestRouter.post(
@@ -11,8 +17,8 @@ connectionRequestRouter.post(
   async (req, res) => {
     try {
       const fromUserId = req.user._id;
-      const { toUserId } = req.params;
-      const { status } = req.params;
+      const { toUserId, status } = req.params;
+      
 
       const allowedStatus = ["interested", "ignored"];
       if (!allowedStatus.includes(status)) {

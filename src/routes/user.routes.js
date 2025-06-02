@@ -72,24 +72,31 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
 
     // 🔄 Modified: return the other user's object directly
     const data = connectionRequests.map((request) => {
-      const connectionUser = request.fromUserId._id.equals(loggedInUser)
+
+      // Add safety checks for populated fields
+      if (!request.fromUserId || !request.toUserId) {
+        return null; // Skip this request if population failed
+      }
+
+      const connectionUser = request.fromUserId._id.equals(loggedInUser._id)
         ? request.toUserId
         : request.fromUserId;
-      
+
       return {
         connectionId: request._id,
         user: {
           _id: connectionUser._id,
           firstName: connectionUser.firstName,
           lastName: connectionUser.lastName,
-          imgURL: connectionUser.imgURL,
+          photoUrl: connectionUser.photoUrl,
           age: connectionUser.age,
           gender: connectionUser.gender,
           about: connectionUser.about,
+          skills: connectionUser.skills,
           // Add any other user fields you want to include
         },
-      }
-    });
+      };
+    }).filter(Boolean);
 
     res.status(200).json({
       message: "Connection requests fetched successfully",
