@@ -1,9 +1,12 @@
 // importing express module
+require("dotenv").config();
+
 const express = require("express");
 const { connectToDB } = require("./config/database.js");
 const app = express();
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const user = require("./models/user.js");
 
 // middlewares
 app.use(

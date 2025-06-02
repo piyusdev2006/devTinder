@@ -25,15 +25,22 @@ const USER_SAFE_DATA = {
 // get all the pending connection requests for the loggedInUser
 userRouter.get('/user/requests/received', userAuth ,async(req, res) => {
   try {
-      const loggedInUser = req.user;
-      const connectionReuqests = await ConnectionRequest.find({
+    const loggedInUser = req.user;
+    if (!loggedInUser) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+      const connectionRequests = await ConnectionRequest.find({
         toUserId: loggedInUser._id,
         status: "interested",
       }).populate("fromUserId",
           USER_SAFE_DATA
         );
+
+        if (!connectionRequests) {
+          return res.status(404).json({ message: "No connection requests" });
+        }
     
-      const data = connectionReuqests.map((request) => {
+      const data = connectionRequests.map((request) => {
         return {
               _id: request._id,
               status: request.status,
@@ -55,7 +62,10 @@ userRouter.get('/user/requests/received', userAuth ,async(req, res) => {
 userRouter.get("/user/connections", userAuth, async (req, res) => {
   try {
     const loggedInUser = req.user;
-    const connectionReuqests = await ConnectionRequest.find({
+    if (!loggedInUser) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const connectionRequests = await ConnectionRequest.find({
       $or: [
         { fromUserId: loggedInUser._id, status: "accepted" },
         { toUserId: loggedInUser._id, status: "accepted" },
@@ -66,10 +76,24 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
 
 
     // 🔄 Modified: return the other user's object directly
-    const data = connectionReuqests.map((request) => {
-      return request.fromUserId._id.toString() === loggedInUser._id.toString()
+    const data = connectionRequests.map((request) => {
+      const connectionUser = conn.fromUserId._id.equals(loggedInUser)
         ? request.toUserId
         : request.fromUserId;
+      
+      return {
+        connectionId: request._id,
+        user: {
+          _id: connectionUser._id,
+          firstName: connectionUser.firstName,
+          lastName: connectionUser.lastName,
+          imgURL: connectionUser.imgURL,
+          age: connectionUser.age,
+          gender: connectionUser.gender,
+          about: connectionUser.about,
+          // Add any other user fields you want to include
+        },
+      }
     });
 
     res.status(200).json({
@@ -93,8 +117,12 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
     limit = limit > 50 ? 50 : limit;
     const skip = (page - 1) * limit;
 
+    if (!loggedInUser) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
     // find all the connections of the loggedInUser(sent + received)
-    const connectionReuqests = await ConnectionRequest.find({
+    const connectionRequest = await ConnectionRequest.find({
       $or: [
         { fromUserId: loggedInUser._id },
         { toUserId: loggedInUser._id }
@@ -103,7 +131,7 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
 
     // Hide the user
     const hideUsersFromFeed = new Set();
-    connectionReuqests.forEach((request) => {
+    connectionRequest.forEach((request) => {
       hideUsersFromFeed.add(request.toUserId.toString());
       hideUsersFromFeed.add(request.fromUserId.toString());
     });

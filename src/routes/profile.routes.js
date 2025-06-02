@@ -2,7 +2,7 @@ const express = require("express");
 const profileRouter = express.Router();
 const { userAuth } = require("../middlewares/auth.middlewares.js");
 const { validateProfileEditData, validatePasswordChangeData } = require("../utils/validation.js");
-const { User } = require("../models/user.js");
+const User  = require("../models/user.js");
 const bcrypt = require("bcryptjs");
 
 
@@ -19,23 +19,30 @@ profileRouter.get("/profile/view", userAuth, async (req, res) => {
 
 profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
   try {
-      // validation of data
+    // validation of data
     if (!validateProfileEditData(req)) {
-        
       throw new Error("Invalid Edit Request");
-        // return res.status(400).send();
+      // return res.status(400).send();
     }
-    // 
+    //
     const loggedInUser = req.user;
+
+    // Validate edits
+    const isEditAllowed = validateProfileEditData(req);
+    if (!isEditAllowed) {
+      throw new Error("Invalid updates. You can only update allowed fields.");
+    }
 
     // Editing profile of the logged in user
     Object.keys(req.body).forEach((key) => (loggedInUser[key] = req.body[key]));
 
     await loggedInUser.save();
 
-    res.json({ message: `${loggedInUser.firstName} your profile is updated`, data: loggedInUser });
-    
-    } catch (error) {
+    res.json({
+      message: `${loggedInUser.firstName} your profile is updated`,
+      data: loggedInUser,
+    });
+  } catch (error) {
       res.status(400).send("Error: " + error.message);
     }
 })
