@@ -10,15 +10,10 @@ const USER_SAFE_DATA = {
   firstName: 1,
   lastName: 1,
   photoUrl: 1,
-  bio: 1,
+  age: 1,
+  gender: 1,
+  about: 1,
   skills: 1,
-  experience: 1,
-  education: 1,
-  projects: 1,
-  certifications: 1,
-  interests: 1,
-  languages: 1,
-  socialLinks: 1,
 };
 
 
@@ -77,7 +72,7 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
 
     // 🔄 Modified: return the other user's object directly
     const data = connectionRequests.map((request) => {
-      const connectionUser = conn.fromUserId._id.equals(loggedInUser)
+      const connectionUser = request.fromUserId._id.equals(loggedInUser)
         ? request.toUserId
         : request.fromUserId;
       
