@@ -104,7 +104,7 @@ connectionRequestRouter.post("/request/review/:status/:requestId" , userAuth, as
     const data = await connectionRequest.save();
 
     res.status(200).json({
-      message: `${loggedInUser.firstName} ${status} ${fromUserId.firstName}'s connection request`,
+      message: `${loggedInUser.firstName} ${status} ${connectionRequest.fromUserId.firstName}'s connection request`,
       data,
     });
 
