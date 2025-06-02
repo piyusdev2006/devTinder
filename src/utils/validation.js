@@ -44,10 +44,7 @@ const validatePasswordChangeData = (req) => {
   const { oldPassword, newPassword } = req.body;
 
   if (!oldPassword || !newPassword) {
-    return res.status(400).json({
-      success: false,
-      message: "Current password and new password are required",
-    });
+    throw new Error("Old password and new password are required");
   }
 
   if (!validator.isStrongPassword(newPassword)) {

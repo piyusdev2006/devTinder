@@ -2,6 +2,7 @@ const express = require("express");
 const profileRouter = express.Router();
 const { userAuth } = require("../middlewares/auth.middlewares.js");
 const { validateProfileEditData, validatePasswordChangeData } = require("../utils/validation.js");
+const User  = require("../models/user.js");
 const bcrypt = require("bcryptjs");
 
 
@@ -16,37 +17,45 @@ profileRouter.get("/profile/view", userAuth, async (req, res) => {
 });
 
 
-// PATCH /profile/edit
-profileRouter.patch('/profile/edit', userAuth, async (req, res) => {
+profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
   try {
-    validateEditProfileData(req);
-    
+    // validation of data
+    if (!validateProfileEditData(req)) {
+      throw new Error("Invalid Edit Request");
+      // return res.status(400).send();
+    }
+    //
     const loggedInUser = req.user;
-    
-    Object.keys(req.body).forEach(key => {
-      loggedInUser[key] = req.body[key];
-    });
-    
+
+    // Validate edits
+    const isEditAllowed = validateProfileEditData(req);
+    if (!isEditAllowed) {
+      throw new Error("Invalid updates. You can only update allowed fields.");
+    }
+
+    // Editing profile of the logged in user
+    Object.keys(req.body).forEach((key) => (loggedInUser[key] = req.body[key]));
+
     await loggedInUser.save();
-    
-    res.status(200).json({
-      success: true,
-      message: "Profile updated successfully",
-      data: loggedInUser
+
+    res.json({
+      message: `${loggedInUser.firstName} your profile is updated`,
+      data: loggedInUser,
     });
-    
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message
-    });
-  }
-});
+      res.status(400).send("Error: " + error.message);
+    }
+})
 
 
 profileRouter.patch("/profile/edit/password", userAuth, async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
+
+    // Validate input
+    if (!validatePasswordChangeData(req)) {
+      throw new Error("Invalid password change request");
+    }
 
     const user = req.user;
 
@@ -71,15 +80,12 @@ profileRouter.patch("/profile/edit/password", userAuth, async (req, res) => {
     await user.save();
 
     res.json({
-      success: true,
       message: `Password updated successfully for ${user.firstName}`,
-      data: user,
+      data: user, 
+
     });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(400).send("Error: " + error.message);
   }
 });
 
