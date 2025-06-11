@@ -2,6 +2,8 @@ const express = require("express");
 const profileRouter = express.Router();
 const { userAuth } = require("../middlewares/auth.middlewares.js");
 const { validateProfileEditData, validatePasswordChangeData } = require("../utils/validation.js");
+const User  = require("../models/user.js");
+const bcrypt = require("bcryptjs");
 
 
 // GET/profile --> getting profile of users
@@ -22,8 +24,14 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
       throw new Error("Invalid Edit Request");
       // return res.status(400).send();
     }
-    
+    //
     const loggedInUser = req.user;
+
+    // Validate edits
+    const isEditAllowed = validateProfileEditData(req);
+    if (!isEditAllowed) {
+      throw new Error("Invalid updates. You can only update allowed fields.");
+    }
 
     // Editing profile of the logged in user
     Object.keys(req.body).forEach((key) => (loggedInUser[key] = req.body[key]));

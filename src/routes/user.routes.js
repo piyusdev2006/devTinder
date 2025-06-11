@@ -6,19 +6,34 @@ const ConnectionRequest = require("../models/connectionRequest.js");
 const User = require("../models/user.js");
 
 
-const USER_SAFE_DATA = "firstName lastName photoUrl age gender about skills";
+const USER_SAFE_DATA = {
+  firstName: 1,
+  lastName: 1,
+  photoUrl: 1,
+  age: 1,
+  gender: 1,
+  about: 1,
+  skills: 1,
+};
 
 
 // get all the pending connection requests for the loggedInUser
 userRouter.get('/user/requests/received', userAuth ,async(req, res) => {
   try {
     const loggedInUser = req.user;
+    if (!loggedInUser) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
       const connectionRequests = await ConnectionRequest.find({
         toUserId: loggedInUser._id,
         status: "interested",
       }).populate("fromUserId",
           USER_SAFE_DATA
-    );
+        );
+
+        if (!connectionRequests) {
+          return res.status(404).json({ message: "No connection requests" });
+        }
     
       const data = connectionRequests.map((request) => {
         return {
@@ -42,7 +57,9 @@ userRouter.get('/user/requests/received', userAuth ,async(req, res) => {
 userRouter.get("/user/connections", userAuth, async (req, res) => {
   try {
     const loggedInUser = req.user;
-
+    if (!loggedInUser) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
     const connectionRequests = await ConnectionRequest.find({
       $or: [
         { fromUserId: loggedInUser._id, status: "accepted" },
@@ -57,12 +74,29 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
     const data = connectionRequests.map((request) => {
 
       // Add safety checks for populated fields
-      if (request.fromUserId._id.toString() === loggedInUser._id.toString()) {
-        return request.toUserId;
+      if (!request.fromUserId || !request.toUserId) {
+        return null; // Skip this request if population failed
       }
-      return request.fromUserId;
-    });
 
+      const connectionUser = request.fromUserId._id.equals(loggedInUser._id)
+        ? request.toUserId
+        : request.fromUserId;
+
+      return {
+        connectionId: request._id,
+        user: {
+          _id: connectionUser._id,
+          firstName: connectionUser.firstName,
+          lastName: connectionUser.lastName,
+          photoUrl: connectionUser.photoUrl,
+          age: connectionUser.age,
+          gender: connectionUser.gender,
+          about: connectionUser.about,
+          skills: connectionUser.skills,
+          // Add any other user fields you want to include
+        },
+      };
+    }).filter(Boolean);
 
     res.status(200).json({
       message: "Connection requests fetched successfully",
@@ -85,6 +119,10 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
     limit = limit > 50 ? 50 : limit;
     const skip = (page - 1) * limit;
 
+    if (!loggedInUser) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
     // find all the connections of the loggedInUser(sent + received)
     const connectionRequest = await ConnectionRequest.find({
       $or: [
@@ -93,7 +131,7 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
       ],
     }).select("fromUserId toUserId status");
 
-    // Hide the user from the feed if they are in a connection request with the loggedInUser
+    // Hide the user
     const hideUsersFromFeed = new Set();
     connectionRequest.forEach((request) => {
       hideUsersFromFeed.add(request.toUserId.toString());
@@ -106,12 +144,11 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
         { _id: { $ne: loggedInUser._id } }
       ],
     }).
-      select(USER_SAFE_DATA)
-      .skip(skip)
+      select(USER_SAFE_DATA).skip(skip)
       .limit(limit);
     
 
-    res.json({data: userFeed});
+    res.send(userFeed);
   } catch (error) {
     res.status(400).json("Error: " + error.message);
   }

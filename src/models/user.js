@@ -52,7 +52,7 @@ const userSchema = new mongoose.Schema(
           throw new Error("Gender data is not valid");
         }
       },
-      enum: ['male', 'female', 'other'],
+      // or enum: ['male', 'female', 'other'],
     },
     photoUrl: {
       type: String,
@@ -69,7 +69,12 @@ const userSchema = new mongoose.Schema(
       maxlength: 300,
     },
     skills: {
-      type: [String]
+      type: [String],
+      validate(arr) {
+        if (arr.length > 7) {
+          throw new Error("You can add up to 7 skills only");
+        }
+      },
     },
   },
   { timestamps: true }

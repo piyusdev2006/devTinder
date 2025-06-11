@@ -15,13 +15,13 @@ const userAuth = async(req, res, next) => {
     // read the toekn from req.cookies
     const { token } = req.cookies;
     if (!token) {
-      return res.status(401).send("Please login!");
+      return res.status(401).send("Please login");
     }
 
     const decodedToken = await jwt.verify(token, process.env.JWT_SECRET || "Strong@786" );
 
     const { _id } = decodedToken;
-    const user = await User.findById(_id);
+    const user = await User.findById(_id );
     if (!user) {
       throw new Error("User not found");
     }
