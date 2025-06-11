@@ -11,8 +11,8 @@ const MONGODB_URI = process.env.MONGODB_URL;
 
 const connectToDB = async () => {
   await mongoose.connect(
-    
-    MONGODB_URI
+    "mongodb+srv://NamasteNode:ShOhQNzmIQq3z5JG@akshaysaininode.ycri0.mongodb.net/devTinder?retryWrites=true&w=majority"
+    // MONGODB_URI
   );
 };
 
