@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const userRouter = express.Router();
 
 const { userAuth } = require('../middlewares/auth.middlewares.js');
@@ -81,29 +82,37 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
         { fromUserId: loggedInUser._id },
         { toUserId: loggedInUser._id }
       ],
-    }).select("fromUserId toUserId status");
+    }).select("fromUserId toUserId");
 
-    // Hide the user
-    const hideUsersFromFeed = new Set();
+    // Collect user IDs to hide from feed
+    const hideUserIds = new Set();
+    
     connectionRequest.forEach((request) => {
-      hideUsersFromFeed.add(request.toUserId.toString());
-      hideUsersFromFeed.add(request.fromUserId.toString());
+      if (request.toUserId) {
+        hideUserIds.add(request.toUserId.toString());
+      }
+      if (request.fromUserId) {
+        hideUserIds.add(request.fromUserId.toString());
+      }
     });
     
+    // Add logged in user ID to hide list
+    hideUserIds.add(loggedInUser._id.toString());
+    
     const userFeed = await User.find({
-      $and: [
-        { _id: { $nin: [...hideUsersFromFeed] } },
-        { _id: { $ne: loggedInUser._id } }
-      ],
-    }).
-      select(USER_SAFE_DATA)
+      _id: { $nin: Array.from(hideUserIds) }
+    })
+      .select(USER_SAFE_DATA)
       .skip(skip)
       .limit(limit);
     
 
-    res.json({userFeed});
+    res.json({
+      message: "Feed fetched successfully", 
+      userFeed
+    });
   } catch (error) {
-    res.status(400).json("Error: " + error.message);
+    res.status(400).json({ message: "Error: " + error.message });
   }
 })
 
