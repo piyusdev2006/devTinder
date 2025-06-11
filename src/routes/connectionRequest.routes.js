@@ -1,14 +1,11 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const connectionRequestRouter = express.Router();
 const { userAuth } = require("../middlewares/auth.middlewares.js");
 const ConnectionRequest = require("../models/connectionRequest.js");
 const User = require("../models/user.js");
 
-// Helper function to validate ObjectId
-const isValidObjectId = (id) => {
-  return mongoose.Types.ObjectId.isValid(id);
-};
+const sendEmail  = require("../utils/sendEmail.js");
+
 
 // sendConnection request  / ignored, intrested
 connectionRequestRouter.post(
@@ -64,14 +61,18 @@ connectionRequestRouter.post(
 
       // saving the connectionRequest in the database
       const data = await connectionRequest.save();
+
+      const emailRes = await sendEmail.run();
+      console.log("After sending email", emailRes);
+
       res.status(201).json({
-        message: "connection request sent successfully",
+        message: req.user.firstName + ' sent a connection request to ' + toUser.firstName,
         data,
       });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
-  });
+});
 
 
 // review connection request : accept / reject
@@ -97,7 +98,7 @@ connectionRequestRouter.post("/request/review/:status/:requestId" , userAuth, as
 
       // another way is given in the message response instead of writing this "connectionRequest.fromUserId.firstName", write this "use fromUser.firstName in your response" you will get the response 
 
-      .populate("fromUserId");
+      
 
     if (!connectionRequest) {
       return res.status(404).json({
