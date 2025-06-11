@@ -47,30 +47,33 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
       .populate("fromUserId", USER_SAFE_DATA)
       .populate("toUserId", USER_SAFE_DATA);
 
-    // Filter out requests where either user is null (deleted user)
-    const validConnectionRequests = connectionRequests.filter(request => 
-      request.fromUserId && request.toUserId
-    );
-
-
-
-
-
-
-
-    const data = validConnectionRequests.map((request) => {
-      if (request.fromUserId._id.toString() === loggedInUser._id.toString()) {
-        return request.toUserId;
+    const data = [];
+    
+    for (const request of connectionRequests) {
+      // Skip if either user is null/undefined
+      if (!request.fromUserId || !request.toUserId) {
+        continue;
       }
-      return request.fromUserId;
-    });
+      
+      // Skip if either user doesn't have an _id (shouldn't happen but safety check)
+      if (!request.fromUserId._id || !request.toUserId._id) {
+        continue;
+      }
+      
+      // Determine which user to return (the one that's not the logged-in user)
+      if (request.fromUserId._id.toString() === loggedInUser._id.toString()) {
+        data.push(request.toUserId);
+      } else if (request.toUserId._id.toString() === loggedInUser._id.toString()) {
+        data.push(request.fromUserId);
+      }
+    }
 
     res.status(200).json({
       message: "Connection requests fetched successfully",
       data,
     });
   } catch (error) {
-
+    console.error("Error in /user/connections:", error);
     res.status(400).json({ message: "Error: " + error.message });
   }
 });
