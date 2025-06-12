@@ -123,7 +123,7 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
 
     res.json({
       message: "Feed fetched successfully", 
-      userFeed
+      data:userFeed
     });
   } catch (error) {
     res.status(400).json({ message: "Error: " + error.message });
