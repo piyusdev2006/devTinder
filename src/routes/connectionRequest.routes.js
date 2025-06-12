@@ -4,6 +4,7 @@ const connectionRequestRouter = express.Router();
 const { userAuth } = require("../middlewares/auth.middlewares.js");
 const ConnectionRequest = require("../models/connectionRequest.js");
 const User = require("../models/user.js");
+const sendEmail = require("../utils/sendEmail.js");
 
 // Helper function to validate ObjectId
 const isValidObjectId = (id) => {
@@ -64,6 +65,11 @@ connectionRequestRouter.post(
 
       // saving the connectionRequest in the database
       const data = await connectionRequest.save();
+
+      // sending email to the user
+      const emailResponse = await sendEmail.run();
+      console.log("Email Response:", emailResponse);
+      
       res.status(201).json({
         message: "connection request sent successfully",
         data,
