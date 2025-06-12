@@ -47,26 +47,13 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
       .populate("fromUserId", USER_SAFE_DATA)
       .populate("toUserId", USER_SAFE_DATA);
 
-    const data = [];
-    
-    for (const request of connectionRequests) {
-      // Skip if either user is null/undefined
-      if (!request.fromUserId || !request.toUserId) {
-        continue;
-      }
-      
-      // Skip if either user doesn't have an _id (shouldn't happen but safety check)
-      if (!request.fromUserId._id || !request.toUserId._id) {
-        continue;
-      }
-      
-      // Determine which user to return (the one that's not the logged-in user)
-      if (request.fromUserId._id.toString() === loggedInUser._id.toString()) {
-        data.push(request.toUserId);
-      } else if (request.toUserId._id.toString() === loggedInUser._id.toString()) {
-        data.push(request.fromUserId);
-      }
-    }
+      console.log(connectionRequests);
+      const data = connectionRequests.map((row) => {
+        if (row.fromUserId._id.toString() === loggedInUser._id.toString()) {
+          return row.toUserId;
+        }
+        return row.fromUserId;
+      });
 
     res.status(200).json({
       message: "Connection requests fetched successfully",
@@ -90,30 +77,18 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
     limit = limit > 50 ? 50 : limit;
     const skip = (page - 1) * limit;
 
-    // find all the connections of the loggedInUser(sent + received)
+  
     const connectionRequest = await ConnectionRequest.find({
-      $or: [
-        { fromUserId: loggedInUser._id },
-        { toUserId: loggedInUser._id }
-      ],
+      $or: [{ fromUserId, toUserId }],
     }).select("fromUserId toUserId");
 
-    // Collect user IDs to hide from feed
-    const hideUserIds = new Set();
-    
-    connectionRequest.forEach((request) => {
-      if (request.toUserId) {
-        hideUserIds.add(request.toUserId.toString());
-      }
-      if (request.fromUserId) {
-        hideUserIds.add(request.fromUserId.toString());
-      }
+    const hideUsersFromFeed = new Set();
+    connectionRequests.forEach((req) => {
+      hideUsersFromFeed.add(req.fromUserId.toString());
+      hideUsersFromFeed.add(req.toUserId.toString());
     });
     
-    // Add logged in user ID to hide list
-    hideUserIds.add(loggedInUser._id.toString());
-    
-    const userFeed = await User.find({
+    const user = await User.find({
       _id: { $nin: Array.from(hideUserIds) }
     })
       .select(USER_SAFE_DATA)
@@ -123,7 +98,7 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
 
     res.json({
       message: "Feed fetched successfully", 
-      userFeed
+      data: user
     });
   } catch (error) {
     res.status(400).json({ message: "Error: " + error.message });
