@@ -119,3 +119,26 @@
 - After configuration restart nginx run this command : "sudo systemctl restart nginx"
 
 - Modify the base url in frontend project from "http://localhost:3000" with "/api"
+
+
+
+# Aadding a custom domain name
+- purchased domain name from godaddy
+- signup on cloudflare & add a new domain name 
+- change the nameserver on godaddy and point it to cloudflare
+- wait for sometime till your nameserver are updated -15 minutes
+- DNS record: A -> singhnavi.life -> 65.2.57.49
+- Enable SSL for your website
+
+# Sending Email via SES 
+- Create an IAM user
+- Give access to AmazonSESFullAccess
+- Amazon SES: Create an Identity
+- Verify your domain name
+- verify your email address
+- Install Amazon SDK for JavaScript for v3
+- code Examples : https://github.com/awsdocs/aws-doc-sdk-examples/blob/main/javascriptv3/example_code/ses/src/ses_sendemail.
+- Access Credentials created in IAM under security credential tab
+- Add the credentials to .env file
+- Write code for SES Client
+- Make the email dynamic by passing more information
