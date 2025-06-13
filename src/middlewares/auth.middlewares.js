@@ -1,6 +1,6 @@
 
 // create an userAuth middleware -> th job of this middleware is to read the token from the req.cookies , validate the token, find the user such that the provided token is of a valid user or not
-require("dotenv").config();
+
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
@@ -13,7 +13,7 @@ const userAuth = async(req, res, next) => {
       return res.status(401).send("Please login");
     }
 
-    const decodedToken = await jwt.verify(token, process.env.JWT_SECRET || "Strong@786" );
+    const decodedToken = await jwt.verify(token, process.env.JWT_SECRET);
 
     const { _id } = decodedToken;
     const user = await User.findById(_id );
