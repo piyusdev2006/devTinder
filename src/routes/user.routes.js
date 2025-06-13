@@ -1,5 +1,4 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const userRouter = express.Router();
 
 const { userAuth } = require('../middlewares/auth.middlewares.js');
@@ -37,7 +36,7 @@ userRouter.get('/user/requests/received', userAuth ,async(req, res) => {
 userRouter.get("/user/connections", userAuth, async (req, res) => {
   try {
     const loggedInUser = req.user;
-    
+
     const connectionRequests = await ConnectionRequest.find({
       $or: [
         { fromUserId: loggedInUser._id, status: "accepted" },
@@ -47,26 +46,19 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
       .populate("fromUserId", USER_SAFE_DATA)
       .populate("toUserId", USER_SAFE_DATA);
 
-    const data = [];
-    
-    for (const request of connectionRequests) {
-      // Skip if either user is null/undefined
-      if (!request.fromUserId || !request.toUserId) {
-        continue;
+    // console.log(connectionRequests);
+
+    const data = connectionRequests
+    .map((request) => {
+      if 
+    (request?.fromUserId?._id?.toString?.() === loggedInUser._id.toString()
+    ) {
+        return request?.toUserId || null;
       }
-      
-      // Skip if either user doesn't have an _id (shouldn't happen but safety check)
-      if (!request.fromUserId._id || !request.toUserId._id) {
-        continue;
-      }
-      
-      // Determine which user to return (the one that's not the logged-in user)
-      if (request.fromUserId._id.toString() === loggedInUser._id.toString()) {
-        data.push(request.toUserId);
-      } else if (request.toUserId._id.toString() === loggedInUser._id.toString()) {
-        data.push(request.fromUserId);
-      }
-    }
+      return request?.fromUserId || null;
+    })
+    .filter(Boolean); // remove nulls
+
 
     res.status(200).json({
       message: "Connection requests fetched successfully",
@@ -90,7 +82,7 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
     limit = limit > 50 ? 50 : limit;
     const skip = (page - 1) * limit;
 
-    // find all the connections of the loggedInUser(sent + received)
+    
     const connectionRequest = await ConnectionRequest.find({
       $or: [
         { fromUserId: loggedInUser._id },
@@ -99,22 +91,17 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
     }).select("fromUserId toUserId");
 
     // Collect user IDs to hide from feed
-    const hideUserIds = new Set();
-    
-    connectionRequest.forEach((request) => {
-      if (request.toUserId) {
-        hideUserIds.add(request.toUserId.toString());
-      }
-      if (request.fromUserId) {
-        hideUserIds.add(request.fromUserId.toString());
-      }
+    const hideUsersFromFeed = new Set();
+    connectionRequest.forEach((req) => {
+      hideUsersFromFeed.add(req.fromUserId.toString());
+      hideUsersFromFeed.add(req.toUserId.toString());
     });
     
-    // Add logged in user ID to hide list
-    hideUserIds.add(loggedInUser._id.toString());
-    
-    const userFeed = await User.find({
-      _id: { $nin: Array.from(hideUserIds) }
+    const users = await User.find({
+      $and: [
+        { _id: { $nin: Array.from(hideUsersFromFeed) } },
+        { _id: { $ne: loggedInUser._id } },
+      ],
     })
       .select(USER_SAFE_DATA)
       .skip(skip)
@@ -123,7 +110,7 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
 
     res.json({
       message: "Feed fetched successfully", 
-      data:userFeed
+      data:users
     });
   } catch (error) {
     res.status(400).json({ message: "Error: " + error.message });

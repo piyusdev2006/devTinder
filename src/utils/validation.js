@@ -8,7 +8,6 @@ const validateSignUpData = (req) => {
         throw new Error("firstName or lastName is not found");
     }
     else if (!validator.isEmail(email)) {
-        // console.log(email);
         throw new Error("Email is not valid");
     }
     else if (!validator.isStrongPassword(password)) {
@@ -29,7 +28,6 @@ const validateProfileEditData = (req) => {
         "email"
     ];
 
-    // loop through each feild given in the allowedEdit field returns true or false 
    const isEditAllowed = Object.keys(req.body).every(
         (field) => allowedEditFeilds.includes(field)
     );
@@ -49,7 +47,11 @@ const validatePasswordChangeData = (req) => {
 
   if (!validator.isStrongPassword(newPassword)) {
     throw new Error("New password must be strong");
-  }
+    }
+    
+    if (oldPassword === newPassword) {
+      throw new Error("New password must be different from the old password");
+    }
 
   return true;
 };

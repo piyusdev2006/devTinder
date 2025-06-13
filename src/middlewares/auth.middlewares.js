@@ -1,8 +1,3 @@
-/* 
-    -> handle auth middleware for all types of the routes 
-    -> We don't generally write middleware function code in routing or server file , instead we create a separate folder for and pass it into the api call by requring it in the routing or server file
-    -> folder name : middlewares/
-*/
 
 // create an userAuth middleware -> th job of this middleware is to read the token from the req.cookies , validate the token, find the user such that the provided token is of a valid user or not
 require("dotenv").config();
@@ -38,5 +33,5 @@ const userAuth = async(req, res, next) => {
 }; 
 
 module.exports = {
-  userAuth
+  userAuth,
 };

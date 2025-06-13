@@ -29,15 +29,15 @@ const connectionRequestSchema = new mongoose.Schema(
 
 
 // creating compound index for fromUserId and toUserId
-connectionRequestSchema.index({ fromUserId: 1, toUserId: 1 }, { unique: true });
+connectionRequestSchema.index({ fromUserId: 1, toUserId: 1 });
 
 
 // pre save hook to check if the fromUserId and toUserId are the same
-connectionRequestSchema.pre('save', async function (next) {
+connectionRequestSchema.pre('save', function (next) {
   const connectionRequest = this;
   // check if the fromUserId and toUserId are the same
   if (connectionRequest.fromUserId.equals(connectionRequest.toUserId)) {
-    throw new Error('fromUserId and toUserId cannot be the same');
+    throw new Error("Cannot send connection request to yourself!");
   }
   next();
 });
@@ -45,6 +45,6 @@ connectionRequestSchema.pre('save', async function (next) {
 
 
 
-const ConnectionRequest = mongoose.model("ConnectionRequest", connectionRequestSchema);
+const ConnectionRequest = new mongoose.model("ConnectionRequest", connectionRequestSchema);
 
 module.exports = ConnectionRequest;
