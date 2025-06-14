@@ -1,4 +1,5 @@
 require("dotenv").config();
+require("./utils/cronjob.js"); // Import the cron job to start it
 
 const express = require("express");
 const connectToDB  = require("./config/database.js");
@@ -11,7 +12,7 @@ const http = require("http");
 // middlewares
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173"],
     credentials: true,
   })
 );

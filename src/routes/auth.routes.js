@@ -74,7 +74,7 @@ authRouter.post("/login", async (req, res) => {
 
       // sending cookies along with Jwt token to user
       res.cookie("token", token, {
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in ms
+        maxAge: 1 * 24 * 60 * 60 * 1000, // 7 days in ms
       });
 
       // sending response back to the user
