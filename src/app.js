@@ -1,5 +1,4 @@
 require("dotenv").config();
-require("./utils/cronjob.js"); // Import the cron job to start it
 
 const express = require("express");
 const connectToDB  = require("./config/database.js");
@@ -8,6 +7,7 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const http = require("http");
 
+require("./utils/cronjob.js"); // Import the cron job to start it
 
 // middlewares
 app.use(

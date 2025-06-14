@@ -1,4 +1,4 @@
-const cron = require('node-cron');
+const cron = require("node-cron");
 const { subDays, startOfDay, endOfDay } = require("date-fns");
 const sendEmail = require("./sendEmail.js");
 const connectionRequestModel = require("../models/connectionRequest.js");
@@ -29,8 +29,8 @@ cron.schedule("15 9 * * *", async () => {
 
         for (const email of listOfEmails) {
             try {
-                await sendEmail.run("Reminder: You have pending connection requests " , email, "You have pending connection requests that you haven't responded to yet. Please check your profile for more details.");
-                // console.log("Email sent to:", res);
+                const res = await sendEmail.run("Reminder: You have pending connection requests " , email, "You have pending connection requests that you haven't responded to yet. Please check your profile for more details.");
+                console.log("Email sent to:", res);
             } catch (error) {
                 console.error("Error sending email:", error);
             }
