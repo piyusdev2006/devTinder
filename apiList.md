@@ -191,5 +191,40 @@ NOTE** -Your secret credentials are known to your local machine only, not even y
 - once Your account is verified You get access to your razorpay Dashboard
 - Create a component UI for Premium page
 - create an API for CreateOrder in backend
+- Added my RAZORPAY_KEY_ID and RAZORPAY_SECRET_KEY in .env file
+- Initialize razorpay in utils
+- creating order on razorPay
+- Created schema and model of razorpay payment
+- saved the order in "Payment" collection
+- make the "/payment/create" API dynamic
+
+### Take reference from this url 
+- Ref = https://github.com/razorpay/razorpay-node/blob/master/documents/order.md
+- Ref = https://razorpay.com/docs/payments/server-integration/nodejs/integration-steps
+
+
+## Webhook integration
+- after razorpay payment dialog opens and it's working and payment is made successfully , we need to remind the user that your payment is successfull or failed or anything after making payment to razorpay
+
+- so we are validating the payment that it's is success or failure using razorpay webhook integration, that show user a dialog box whether his/her payment is successful or failed to the url endpoint u have configured in your razorpay account for webhook integration 
+- so basically u create a webhook url from your webhook's section in your razorpay account 
+- While setting the webhook URl , it ask for Webhook secert , set the secret carefully and remember while validating webhook it requires , so add it in .env files
+RAZORPAY_WEBHOOK_SECRET="Dummy@$2345"
+- Also select the event You want that razorpay will show u on your defined Apiendoint url dialogbox
+
+- please make sure that the webhook url is same as your api endpoint url 
+- Both webhookUrl and apiEndpointUrl must be same :- "https://singhnavi.life/payment/success" 
+
+- Ref = https://razorpay.com/docs/webhooks/validate-test/
+
+- This is where u can find the payment details : https://razorpay.com/docs/webhooks/payloads/payments/
+
+## Push code on Ur AWS Machine and check it's working fine or not 
+- Don't forgot to add the .evv file SECRET_KEYS to the AWS machine before running the app
+Just open the .env file using "sudo nano .env" and copy-paste the secret Key from loacal env files
+
+
+## update the UI that payment is successful or failed
+- create an api so that frontend can verify whether the user is premium or not "/premium/verify"
 
 
