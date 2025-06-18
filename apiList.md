@@ -185,5 +185,11 @@ NOTE** -Your secret credentials are known to your local machine only, not even y
 - bee-queue and bullMQ npm ppackage explore it as an alternative to amazon ses for sending bulk email
 
 
+## Razorpay Payment Gateway Integration
+- sing up on razorpay & complete KYC with complete details
+- it takes 3-5 days
+- once Your account is verified You get access to your razorpay Dashboard
+- Create a component UI for Premium page
+- create an API for CreateOrder in backend
 
 
