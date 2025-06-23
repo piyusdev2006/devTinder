@@ -228,3 +228,73 @@ Just open the .env file using "sudo nano .env" and copy-paste the secret Key fro
 - create an api so that frontend can verify whether the user is premium or not "/premium/verify"
 
 
+## Web Socket & Socket.io Socket.js File Documentation
+- Real-time chat using web-socket(socket.io) , websocket is an underlying concept and we are going to use the library socket.io 
+- Build the UI for a chat window on "/chat/:targetUserId"
+- setup socket.io in backend
+- intsall socket.io using npm i socket.io
+- also install socket.io for client using npm i socket.io-client
+
+
+This file handles real-time chat functionality for the DevTinder application using Socket.IO WebSocket connections.
+
+## Dependencies
+- `socket.io` - For WebSocket server implementation
+- `crypto` - For generating secure room IDs
+
+## Functions
+
+### getSecretRoomId(userId, targetUserId)
+Generates a unique room identifier for two users to chat privately.
+- Takes two user IDs as parameters
+- Sorts the IDs alphabetically and joins them with "$" 
+- Creates SHA256 hash of the combined string
+- Returns deterministic room ID regardless of parameter order
+
+### initializeSocket(server)
+Sets up the Socket.IO server with event handlers.
+- Configures CORS to allow connections from http://localhost:5173
+- Handles three socket events: join-room, send-message, and disconnect
+
+## Socket Events
+
+### join-room
+- Receives: firstName, userId, targetUserId
+- Creates room ID using getSecretRoomId()
+- Adds user's socket to the room
+- Logs join activity to console
+
+### send-message  
+- Receives: firstName, userId, targetUserId, text
+- Generates room ID for the conversation
+- Emits "messageReceived" event to all users in that room
+- Logs message activity to console
+
+### disconnect
+- Currently empty handler for when users disconnect
+
+## Room Management
+Uses deterministic room IDs so the same two users always join the same chat room. Room IDs are SHA256 hashes making them secure and unpredictable to outsiders.
+
+## Message Broadcasting
+Messages are only sent to users within the same room using Socket.IO's room functionality with `io.to(roomId).emit()`.
+
+
+
+## Building Real-Time Live chat feature
+- till now we have build the chat system using socket.io so that user can chat in a room using room id or user id
+- now we have to store and save that chat so we are going to create chat schema and models so that we can store it in the database
+- in models/ create chat.js folder
+
+- Build the UI for a chat window on /chat/:targetUserId
+- Setup socket.io in backend
+- npm i socket.io
+- Setup frontend socket.io-client
+- Initialise the chat
+- createSocketConnection
+- Listen to events
+- Homework:  improve the UI
+- Homework: Fix Security Bug - auth in web ockets
+- Homework: Fix bug - If I'm not fried, then I should not be able to send message
+- Homework: feat: Show Green Symbol when online???? - [last Seen 2 hours ago]
+- Homework: Limit messages when fetching from DB
